@@ -10,6 +10,7 @@ import com.practice.usermanagement.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -36,5 +37,23 @@ public class UserServiceImpl implements UserService {
         user.setPassword(passwordEncoder.encode(userdto.getPassword()));
         userRepository.save(user);
         return userMapper.toDto(user);
+    }
+
+    @Override
+    public UserDto getUser(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user==null){
+            throw new UsernameNotFoundException("user not found with userId "+ userId);
+        }
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    public void deleteUser(Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if(user==null){
+            throw new UsernameNotFoundException("user not found with userId "+ userId);
+        }
+        userRepository.deleteById(userId);
     }
 }
